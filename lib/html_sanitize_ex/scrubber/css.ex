@@ -155,9 +155,13 @@ defmodule HtmlSanitizeEx.Scrubber.CSS do
   defp scrub_val(val) do
     val = if String.match?(val, ~r/(\\|&)/), do: "", else: val
 
-    Regex.replace(~r/(\S+)/, val, fn _all, a ->
-      if(allowed_keyword?(a) || measured_unit?(a), do: a, else: "")
-    end)
+    if String.starts_with?(val, "linear-gradient(") and valid_linear_gradient?(val) do
+      val
+    else
+      Regex.replace(~r/(\S+)/, val, fn _all, a ->
+        if(allowed_keyword?(a) || measured_unit?(a), do: a, else: "")
+      end)
+    end
   end
 
   @allowed_keywords [
@@ -211,7 +215,15 @@ defmodule HtmlSanitizeEx.Scrubber.CSS do
   defp measured_unit?(val) do
     String.match?(
       val,
-      ~r/\A(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|-?\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)\z/
+      ~r/\A(#[0-9a-f]+|rgb\(\d+%?,\d*%?,?\d*%?\)?|rgba\(\d+%?,\d*%?,?\d*%?,?\d*\.?\d*\)?|-?\d{0,2}\.?\d{0,2}(cm|em|ex|in|mm|pc|pt|px|%|,|\))?)\z/
+    )
+  end
+
+  defp valid_linear_gradient?(val) do
+    val
+    |> String.replace(~r/\s+/, "")
+    |> String.match?(
+      ~r/^linear-gradient\(((rgba?\(\d+%?,\d*%?,?\d*%?(?:,\d*\.?\d*)?\))\s*\d*%?)(?:,\s*(rgba?\(\d+%?,\d*%?,?\d*%?(?:,\d*\.?\d*)?\))\s*\d*%?)*\)$/
     )
   end
 end
