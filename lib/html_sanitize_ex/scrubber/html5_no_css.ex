@@ -2104,99 +2104,49 @@ defmodule HtmlSanitizeEx.Scrubber.HTML5NoCSS do
     "translate"
   ])
 
-  Meta.allow_tags_with_style_attributes([
-    "a",
-    "blockquote",
-    "br",
-    "code",
-    "del",
-    "em",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "head",
-    "header",
-    "hgroup",
-    "hr",
-    "html",
-    "i",
-    "iframe",
-    "img",
-    "input",
-    "ins",
-    "kbd",
-    "keygen",
-    "label",
-    "legend",
-    "li",
-    "link",
-    "map",
-    "mark",
-    "menu",
-    "meta",
-    "meter",
-    "nav",
-    "noscript",
-    "object",
-    "ol",
-    "optgroup",
-    "option",
-    "output",
-    "p",
-    "param",
-    "pre",
-    "progress",
-    "q",
-    "rp",
-    "rt",
-    "ruby",
-    "s",
-    "samp",
-    "script",
-    "section",
-    "select",
-    "small",
-    "source",
-    "span",
-    "strong",
-    "sub",
-    "summary",
-    "sup",
-    "table",
-    "tbody",
-    "td",
-    "textarea",
-    "tfoot",
-    "th",
-    "thead",
-    "time",
-    "title",
-    "tr",
-    "track",
-    "u",
-    "ul",
-    "var",
-    "video",
-    "wbr"
-  ])
+  # Note: Removed Meta.allow_tags_with_style_attributes to disable CSS processing
 
   # style tags
 
   def scrub({"style", attributes, [text]}) do
+    IO.inspect(attributes, label: "prout scrub")
+
     {"style", scrub_attributes("style", attributes), [scrub_css(text)]}
+    |> IO.inspect(label: "prout scrub result")
   end
 
   defp scrub_attributes("style", attributes) do
     Enum.map(attributes, fn attr -> scrub_attribute("style", attr) end)
     |> Enum.reject(&is_nil(&1))
+    |> IO.inspect(label: "prout scrub attributes result")
   end
 
   def scrub_attribute("style", {"media", value}), do: {"media", value}
   def scrub_attribute("style", {"type", value}), do: {"type", value}
   def scrub_attribute("style", {"scoped", value}), do: {"scoped", value}
+
+  def scrub_attribute("div", {"style", value}), do: {"style", value}
+  def scrub_attribute("iframe", {"style", value}), do: {"style", value}
+  def scrub_attribute("span", {"style", value}), do: {"style", value}
+  def scrub_attribute("a", {"style", value}), do: {"style", value}
+  def scrub_attribute("p", {"style", value}), do: {"style", value}
+  def scrub_attribute("h1", {"style", value}), do: {"style", value}
+  def scrub_attribute("h2", {"style", value}), do: {"style", value}
+  def scrub_attribute("h3", {"style", value}), do: {"style", value}
+  def scrub_attribute("h4", {"style", value}), do: {"style", value}
+  def scrub_attribute("h5", {"style", value}), do: {"style", value}
+  def scrub_attribute("h6", {"style", value}), do: {"style", value}
+  def scrub_attribute("em", {"style", value}), do: {"style", value}
+  def scrub_attribute("img", {"style", value}), do: {"style", value}
+  def scrub_attribute("li", {"style", value}), do: {"style", value}
+  def scrub_attribute("link", {"style", value}), do: {"style", value}
+  def scrub_attribute("nav", {"style", value}), do: {"style", value}
+  def scrub_attribute("ol", {"style", value}), do: {"style", value}
+  def scrub_attribute("pre", {"style", value}), do: {"style", value}
+  def scrub_attribute("section", {"style", value}), do: {"style", value}
+  def scrub_attribute("strong", {"style", value}), do: {"style", value}
+  def scrub_attribute("ul", {"style", value}), do: {"style", value}
+  def scrub_attribute("video", {"style", value}), do: {"style", value}
 
   # allow data tags
   def scrub_attribute(_tag, {"data-" <> data_tag, value}),
