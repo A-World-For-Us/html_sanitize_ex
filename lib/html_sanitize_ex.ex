@@ -13,6 +13,10 @@ defmodule HtmlSanitizeEx do
     html |> Scrubber.scrub(Scrubber.HTML5)
   end
 
+  def html5_no_css(html) do
+    html |> Scrubber.scrub(Scrubber.HTML5NoCSS)
+  end
+
   def markdown_html(html) do
     html |> Scrubber.scrub(Scrubber.MarkdownHTML)
   end
