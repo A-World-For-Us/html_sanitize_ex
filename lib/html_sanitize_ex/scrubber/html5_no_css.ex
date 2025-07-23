@@ -2109,16 +2109,12 @@ defmodule HtmlSanitizeEx.Scrubber.HTML5NoCSS do
   # style tags
 
   def scrub({"style", attributes, [text]}) do
-    IO.inspect(attributes, label: "prout scrub")
-
     {"style", scrub_attributes("style", attributes), [scrub_css(text)]}
-    |> IO.inspect(label: "prout scrub result")
   end
 
   defp scrub_attributes("style", attributes) do
     Enum.map(attributes, fn attr -> scrub_attribute("style", attr) end)
     |> Enum.reject(&is_nil(&1))
-    |> IO.inspect(label: "prout scrub attributes result")
   end
 
   def scrub_attribute("style", {"media", value}), do: {"media", value}
